@@ -2,7 +2,7 @@
 % function [Dz] = TKO_C2D_matched(Ds, h, w_bar, c, s)
 % Objective: Matched z transform: converts D(s) to D(z)
 % Input options: 
-%   Gs: symbolic format of the transfer function in continuous time
+%   Gs: symbolic format of the transfer function in continu
 %   h: variable indicating time step used in the mapping
 %   w_bar: (frequency of interest)
 %   s: symbolic form of CT tf, variable used for s
@@ -78,7 +78,7 @@ function [Dz] = TKO_C2D_matched(Ds, h, w_bar, c, s)
         K_mult = S_rf_bar/Z_rf_bar;
 
         % Returning the function
-        Dz = (K_mult)*Z_rf;
+        Dz = norm(K_mult)*Z_rf;
     else
         error(['Error within the format of data entered. Please refer ' ...
             'to the documentation with help'])

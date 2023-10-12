@@ -29,4 +29,9 @@ end
 test = trim(a*x+b*y);
 residual = norm(f-test);
 
+f_pol
+k
+y
+x
+
 

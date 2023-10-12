@@ -1,0 +1,16 @@
+%% Code used to output solutions for problem 3 of homework 1
+
+syms s
+Ds_test = (s+z1)/(s*(s+p1));
+help TKO_C2D_matched
+[Dz_se_sym] = TKO_C2D_matched(Ds_test, 0.01, 10, 'se_c', s);
+[Dz_st_sym] = TKO_C2D_matched(Ds_test, 0.01, 10, 'st_c', s);
+
+Ds_test2_val = (s+1)/(s*(s+10));
+[Dz_se_val] = TKO_C2D_matched(Ds_test2_val, 0.01, 10, 'se_c', s);
+[Dz_st_val] = TKO_C2D_matched(Ds_test2_val, 0.01, 10, 'st_c', s);
+Dz_se_val
+Dz_st_val
+Ds_test2_tf = tf([1, -1], [1, -10, 0]);
+opt = c2dOptions('Method','matched','PrewarpFrequency',10);
+c2d(Ds_test2_tf,0.01,opt)
