@@ -30,9 +30,9 @@ Td = 0.125/0.317;
 pid_prob = tf([Kp*Td, Kp, Kp/Ti], [1, 0]);
 
 % function with pade approximation
-ol_pid = g_approx*pid_prob;
+%ol_pid = g_approx*pid_prob;
 % function with exact representation of delay
-%ol_pid = g2*pid_prob;
+ol_pid = g2*pid_prob;
 
 bode(ol_pid)
 margin(ol_pid);
