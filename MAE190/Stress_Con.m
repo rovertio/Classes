@@ -1,10 +1,9 @@
-function [Kf, Kfs] = Stress_Con(shaft_d, end_d, geo_r, geo, Sut, mat)
+function [Kf, Kfs] = Stress_Con(shaft_d, end_D, geo_r, geo, Sut, mat)
 % Separate script used soley for determining the stress concentrations of
 % the shaft in the location specified for the program.
-
 % Inputs: 
-%   Shaft_d     Shaft iteration diameter
-%   End_d       End shaft diameter
+%   shaft_d     Shaft iteration diameter (smaller one)
+%   end_D       End shaft diameter (bigger one)
 %   geo_r       Geometry radius
 %   geo         Geometry type
 %   Sut         Material ultimate tensile strength
@@ -42,17 +41,17 @@ if isequal(geo, 'fillet')
     b_t = [-0.23865, -0.23161, -0.21649, -0.12692];
 
     % Metric for determining geometric properties
-    Dod = shaft_d/end_d;
+    Dod = end_D/shaft_d;
 
     % Calculation of Kt: Normal strength geometric factor
     A_mv = interp1(Dd_m, A_m, Dod);
     b_mv = interp1(Dd_m, b_m, Dod);
-    Kt = A_mv*(geo_r/end_d)^(b_mv);
+    Kt = A_mv*(geo_r/end_D)^(b_mv);
     
     % Calculation of Kts: Shear strength geometric factor
     A_tv = interp1(Dd_t, A_t, Dod);
     b_tv = interp1(Dd_t, b_t, Dod);
-    Kts = A_tv*(geo_r/end_d)^(b_tv);
+    Kts = A_tv*(geo_r/end_D)^(b_tv);
 
 end
 

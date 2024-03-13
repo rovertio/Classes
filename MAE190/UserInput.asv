@@ -36,36 +36,33 @@ sspec.mat_prop = extract_prop(Mat_n,MatData);
 % Used in obtaining the properties such as endurance strength that require
 % properties such as: finish, size factor, and others
 % Assumes round/circular cross-section
-sspec.surface_s = 'machined';
-sspec.reliability = 0.95;
-sspec.temperature = 25;     % in Celsius/Farenheit from specified units
+surface_s = 'machined';
+reliability_s = 0.95;
+temperature_s = 25;     % in Celsius/Farenheit from specified units
 
-% Geometry structure initialization
-geo = struct;
-sspec.geo = geo;
 % Geometric specifications: fillet and fillet radius
-geo.type = 'fillet';
-geo.lsd = 1.2;          % large shaft dia as percentage of small shaft d
-geo.r = 0.1;            % percentage of smaller shaft diameter
+geo_type = 'fillet';
+geo_lsd = 1.2;          % large shaft dia as percentage of small shaft d
+geo_r = 0.1;            % percentage of smaller shaft diameter
 
 
 %% Design load input section
 % Mean torsion
-sspec.Tm = 2;
+Tm = 2;
 % Amplitude torsion
-sspec.Ta = 1;
+Ta = 1;
 % Mean moment
-sspec.Mm = 3;
+Mm = 3;
 % Amplitude moment
-sspec.Ma = 0.5;
+Ma = 0.5;
 
 
 %% Factor of safety specification section
 % Factor of safety: Capcity/Situation
-sspec.safety_n = 2;
+safety_n = 2;
 
 % Failure criteria selection
-sspec.criteria = 'goodman';
+criteria = 'goodman';
 
 
 %% Code/Calculation execution section
@@ -74,12 +71,7 @@ sspec.criteria = 'goodman';
 
 % Initial guess of diameter for iteration
 Ini_d = 0.1;
-% Convergence criteria: in percent
-ccrit = 0.5;
-
-
 % Call of the function
-design_dia = shaft_itt(sspec, Ini_d, ccrit)
 
 
 %% Material property extraction function

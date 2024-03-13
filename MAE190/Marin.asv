@@ -1,23 +1,23 @@
-function [Se] = Marin(units, Sut, finish, end_D, temp, rel)
+function [ka, kb, kc, kd, ke] = Marin(units, Sut, finish, end, temp, rel)
 % Separate script for only finding the Marin factors associated with the
 % endurance strength for the shaft at an iteration point
+
 % Inputs: 
-%   units       Desired unit system to use  ('SI' or 'Imperial')
+%   units       Desired unit system to use
 %   Sut         Material ultimate tensile strength
 %   finish      Surface specifications of th shaft
-%   end_D       End shaft diameter (bigger one)
+%   shaft_d     Shaft diameter (bigger one)
 %   temp        Specified environment temperature
 %   rel         Specified reliability desired
 % Outputs: 
-%   Se          Endurance strength
-%                   ka: Surface finish factor
-%                   kb: assumes no axial through the desired analysis
-%                   via this code script. Assumes circular cross-section
-%                   kc: assumed to be 1 because of von mises stress
-%                   kd: Through quadratic representative of
-%                   tabulated values
-%                   ke: linear interpolation between tabulated
-%                   values
+%   ka          Surface finish factor
+%   kb          Size factor: assumes no axial through the desired analysis
+%               via this code script. Assumes circular cross-section
+%   kc          Laod factor: assumed to be 1 because of von mises stress
+%   kd          Temperature factor: Through quadratic representative of
+%               tabulated values
+%   ke          Reliability factor: linear interpolation between tabulated
+%               values
 
 
 % ka and kb value generation
@@ -38,12 +38,12 @@ if isequal(units, 'SI') % When using MPa and mm
     end
 
     % kb value generation
-    if end_D >= 2.79 && end_D <= 51
-        kb = 1.24*(end_D)^(-0.107);
-    elseif end_D > 51 && end_D <= 254
-        kb = 1.51*(end_D)^(-0.157);
+    if shaft_d >= 2.79 && shaft_d <= 51
+        kb = 1.24*(shaft_d)^(-0.107);
+    elseif shaft_d > 51 && shaft_d <= 254
+        kb = 1.51*(shaft_d)^(-0.157);
     else
-        kb = 1.51*(end_D)^(-0.157);
+        kb = 1.51*(shaft_d)^(-0.157);
     end
 
     % kd temperature conversion: celsius to farenheit
@@ -66,12 +66,12 @@ elseif isequal(units, 'Imperial') % When using ksi
     end
 
     % kb value generation
-    if end_D >= 0.11 && end_D <= 2
-        kb = 0.879*(end_D)^(-0.107);
-    elseif end_D > 2 && end_D <= 10
-        kb = 0.91*(end_D)^(-0.157);
+    if shaft_d >= 0.11 && shaft_d <= 2
+        kb = 0.879*(shaft_d)^(-0.107);
+    elseif shaft_d > 2 && shaft_d <= 10
+        kb = 0.91*(shaft_d)^(-0.157);
     else
-        kb = 0.91*(end_D)^(-0.157);
+        kb = 0.91*(shaft_d)^(-0.157);
     end
 
     temp = temp;
@@ -96,5 +96,3 @@ ke_p = [1, 0.897, 0.868, 0.814, 0.753, 0.702, 0.659, 0.620];
 ke = interp1(rel_p, ke_p, rel);
 
 
-% Endurance strength calculation with resultant marin factors
-Se = ka*kb*kc*kd*ke*(Sut/2);
