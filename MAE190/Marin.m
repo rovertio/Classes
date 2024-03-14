@@ -76,14 +76,14 @@ elseif isequal(units, 'Imperial') % When using ksi
 
     temp = temp;
 
+end 
+
 % Final ka calculation
 ka = a*(Sut^b);
 
 % Final kd calculation with temperature
 kd = 0.975 + 0.432*(10^(-3))*temp - 0.115*(10^(-5))*temp^2 ...
     + 0.104*(10^(-8))*temp^3 - 0.595*(10^(-12))*temp^4;
-
-end 
 
 
 % kc value generation

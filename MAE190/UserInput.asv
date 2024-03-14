@@ -5,6 +5,8 @@
 % Sections of the code can be run as necessary to adjust and test different
 % parameters
 
+% Parameters and other values for this script is from the 9th version of
+% Shigley's textbook for mechanical design
 
 %% Setup: Units and Material database
 % Initialize structure with all input data
@@ -17,52 +19,64 @@ sspec.Unit_Choice = 'SI';
 
 % Material database read
 % Imports the full material data from the specified source csv file
-% Reference 'TO_MAE190.csv' for formatting if implementing other files
+% Reference 'MAE190_MaterialProps - Sheet1.csv' for formatting if 
+% implementing other files
 %    - Refrence readmatrix function for supported file types for reading
 %    - Code accesses material from the text name on the left-most column
 %    - Properties include: yield and ultiumate strengths
-MatData = readmatrix("TO_MAE190.csv");
+MatData = readcell("MAE190_MaterialProps - Sheet1.csv");
 
 
 %% Material selection (using chosen material database)
 % Refer to materials matlab files for full database used in code
-% Material name specification
-Mat_n = '1070 steel';
+% Material name specification: 
+%   [UNS No.] [SAE/ASI No.] [Processing] [Description (as necessary)]
+Mat_n = 'G10060 1006 HR';
 
 % Extracting maerial properties
 sspec.mat_prop = extract_prop(Mat_n,MatData);
+
 
 %% Shaft mechanical property specication
 % Used in obtaining the properties such as endurance strength that require
 % properties such as: finish, size factor, and others
 % Assumes round/circular cross-section
-surface_s = 'machined';
-reliability_s = 0.95;
-temperature_s = 25;     % in Celsius/Farenheit from specified units
+sspec.surface_s = 'machined';
+sspec.reliability = 0.95;
+sspec.temperature = 25;     % in Celsius/Farenheit from specified units
 
+% Geometry structure initialization
+sspec.geo = struct;
 % Geometric specifications: fillet and fillet radius
-geo_type = 'fillet';
-geo_lsd = 1.2;          % large shaft dia as percentage of small shaft d
-geo_r = 0.1;            % percentage of smaller shaft diameter
+sspec.geo.type = 'fillet';
+sspec.geo.lsd = 1.2;          % ratio of large shaft dia to small shaft d
+sspec.geo.r = 0.1;            % percentage of smaller shaft diameter
 
 
 %% Design load input section
-% Mean torsion
-Tm = 2;
-% Amplitude torsion
-Ta = 1;
-% Mean moment
-Mm = 3;
-% Amplitude moment
-Ma = 0.5;
+% Midrange and alternating stress input
+% sspec.Tm = 2;           % Mean torsion
+% sspec.Ta = 1;           % Amplitude torsion
+% sspec.Mm = 3;           % Mean moment
+% sspec.Ma = 0.5;         % Amplitude moment
+
+
+% If the midrange and alternating moment/torque not available:
+%   Calculate with minimum and maximum: function midamp
+Mmin = 1000;
+Mmax = 5000;
+Tmin = 0;
+Tmax = 1800;
+% Function for the stress values
+[sspec.Ma, sspec.Mm, sspec.Ta, sspec.Tm] = midamp(Mmax, Mmin, Tmax, Tmin);
 
 
 %% Factor of safety specification section
 % Factor of safety: Capcity/Situation
-safety_n = 2;
+sspec.safety_n = 2;
 
 % Failure criteria selection
-criteria = 'goodman';
+sspec.criteria = 'goodman';
 
 
 %% Code/Calculation execution section
@@ -71,20 +85,36 @@ criteria = 'goodman';
 
 % Initial guess of diameter for iteration
 Ini_d = 0.1;
+% Convergence criteria: in percent
+ccrit = 0.5;
+
+
 % Call of the function
+design_dia = shaft_itt(sspec, Ini_d, ccrit)
 
 
-%% Material property extraction function
+%% Miscellaneous functions
 
+% Material property extraction from csv file
 function [mat_prop] = extract_prop(name, database)
 mat_prop = struct;
-    for i=1:length(database, 1)
-        if isequal(name, database(i,1))
-            mat_prop.name = database(i,1);
-            mat_prop.Sy = database(i,2);
-            mat_prop.Sut = database(i,3);
+    for i=1:size(database, 1)
+        if isequal(name, string(database(i,1)))
+            mat_prop.name = string(database(i,1));
+            mat_prop.Sut_SI = cell2mat(database(i,2));
+            mat_prop.Sut_Imperial = cell2mat(database(i,3));
+            mat_prop.Sy_SI = cell2mat(database(i,4));
+            mat_prop.Sy_Imperial = cell2mat(database(i,5));
         end
     end
 end 
 
+
+% Midrange and amplitude calculations
+function [Ma, Mm, Ta, Tm] = midamp(Mmax, Mmin, Tmax, Tmin)
+    Ma = abs((Mmax - Mmin)/(2));
+    Mm = (Mmax + Mmin)/(2);
+    Ta = abs((Tmax - Tmin)/(2));
+    Tm = (Tmax + Tmin)/(2);
+end
 

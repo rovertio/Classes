@@ -1,11 +1,11 @@
-function [Kf, Kfs] = Stress_Con(shaft_d, end_D, geo_r, geo, Sut, mat)
+function [Kf, Kfs] = Stress_Con(shaft_d, end_D, geo_r, geo_type, Sut, mat)
 % Separate script used soley for determining the stress concentrations of
 % the shaft in the location specified for the program.
 % Inputs: 
 %   shaft_d     Shaft iteration diameter (smaller one)
 %   end_D       End shaft diameter (bigger one)
 %   geo_r       Geometry radius
-%   geo         Geometry type
+%   geo_type    Geometry name
 %   Sut         Material ultimate tensile strength
 %   Mat         Material name
 % Outputs: 
@@ -19,7 +19,7 @@ else
     % Calculation of q: Notch sensitivity Axial/Bending
     roota_ax = 0.246 - 3.08*(10^-3)*Sut + 1.51*(10^-5)*Sut^2 ...
         - 2.67*(10^-8)*Sut^3;
-    q = 1/(1 + (roota_ax/sqrt(Geo_d/2)));
+    q = 1/(1 + (roota_ax/sqrt(geo_r/2)));
     
     % Calculation of qs: Notch sensitivity Axial/Bending
     roota_sh = 0.190 - 2.51*(10^-3)*Sut + 1.35*(10^-5)*Sut^2 ...
@@ -28,7 +28,7 @@ else
 end
 
 
-if isequal(geo, 'fillet')
+if isequal(geo_type, 'fillet')
     % From selected tabulated values for geometric values (moment)
     Dd_m = [6, 3, 2, 1.5, 1.2, 1.1, 1.07, 1.05, 1.03, 1.02, 1.01];
     A_m = [0.87868, 0.89334, 0.90879, 0.93836, 0.97098, 0.95120, ...
