@@ -1,4 +1,4 @@
-function [dia] = shaft_itt(shaft, init, ccrit)
+function [dia, itt_array] = shaft_itt(shaft, init, ccrit)
 % Function which depends on Stress_Con, Marin, vs_stress, and criteria
 % functions to iterate and calculate a design diameter for a shaft using
 % the input material data
@@ -20,11 +20,11 @@ function [dia] = shaft_itt(shaft, init, ccrit)
 
 
 if isequal(shaft.Unit_Choice, 'SI')
-    Sy = shaft.Sy_SI;
-    Sut = shaft.Sut_SI;
+    Sy = shaft.mat_prop.Sy_SI;
+    Sut = shaft.mat_prop.Sut_SI;
 elseif isequal(shaft.Unit_Choice, 'Imperial')
-    Sy = shaft.Sy_Imperial;
-    Sut = shaft.Sut_Imperial;
+    Sy = shaft.mat_prop.Sy_Imperial;
+    Sut = shaft.mat_prop.Sut_Imperial;
 end
 
 
@@ -37,13 +37,16 @@ conv_p = 1;
 while conv_p > ccrit
     % Calcaulating larger diameter from the input smaller one
     end_D = shaft.geo.lsd* itt_array(ii);
+    geo_radius = shaft.geo.r*itt_array(ii);
+
     % Getting diameter from failure criteria specified
-    [Kf, Kfs] = Stress_Con(itt_array(ii), end_D, shaft.geo.r, ...
+    [Kf, Kfs] = Stress_Con(itt_array(ii), end_D, geo_radius, ...
         shaft.geo.type, Sut, shaft.mat_prop.name);
-    [Se] = Marin(shaft.Unit_Choice, Sut, shaft.machine_s, end_D,...
+    [Se] = Marin(shaft.Unit_Choice, Sut, shaft.surface_s, end_D,...
         shaft.temperature, shaft.reliability);
-    itt_array(ii+1) = criteria(shaft.criteria, shaft.Ma, shaft.Mm, ...
+     dia = criteria(shaft.criteria, shaft.Ma, shaft.Mm, ...
         shaft.Ta, shaft.Tm, Kf, Kfs, shaft.safety_n, Sy, Sut, Se);
+     itt_array(ii+1) = dia;
     
     % Determining convergence
     conv_p = (1 - abs(itt_array(ii+1)/itt_array(ii)))*100;

@@ -84,13 +84,13 @@ sspec.criteria = 'goodman';
 % dimensions used for design
 
 % Initial guess of diameter for iteration
-Ini_d = 0.1;
+Ini_d = 0.3;
 % Convergence criteria: in percent
-ccrit = 0.5;
+ccrit = 0.005;
 
 
 % Call of the function
-design_dia = shaft_itt(sspec, Ini_d, ccrit)
+[design_dia, ii] = shaft_itt(sspec, Ini_d, ccrit)
 
 
 %% Miscellaneous functions
