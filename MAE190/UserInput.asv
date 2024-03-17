@@ -15,7 +15,7 @@ sspec = struct;
 % Unit system specification
 % 'SI' --> Newton-meters and MPa for input/output
 % 'Imperial' --> Pound-inch and psi for input/output
-sspec.Unit_Choice = 'SI';
+sspec.Unit_Choice = 'Imperial';
 
 % Material database read
 % Imports the full material data from the specified source csv file
@@ -24,14 +24,14 @@ sspec.Unit_Choice = 'SI';
 %    - Refrence readmatrix function for supported file types for reading
 %    - Code accesses material from the text name on the left-most column
 %    - Properties include: yield and ultiumate strengths
-MatData = readcell("MAE190_MaterialProps - Sheet1.csv");
+MatData = readcell("MAE190_MaterialProps - Sheet2.csv");
 
 
 %% Material selection (using chosen material database)
 % Refer to materials matlab files for full database used in code
 % Material name specification: 
 %   [UNS No.] [SAE/ASI No.] [Processing] [Description (as necessary)]
-Mat_n = 'G10060 1006 HR';
+Mat_n = 'Prob1';
 
 % Extracting maerial properties
 sspec.mat_prop = extract_prop(Mat_n,MatData);
@@ -42,7 +42,7 @@ sspec.mat_prop = extract_prop(Mat_n,MatData);
 % properties such as: finish, size factor, and others
 % Assumes round/circular cross-section
 sspec.surface_s = 'machined';
-sspec.reliability = 0.95;
+sspec.reliability = 99.99;
 sspec.temperature = 25;     % in Celsius/Farenheit from specified units
 
 % Geometry structure initialization
@@ -73,24 +73,24 @@ Tmax = 1800;
 
 %% Factor of safety specification section
 % Factor of safety: Capcity/Situation
-sspec.safety_n = 2;
+sspec.safety_n = 1.5;
 
 % Failure criteria selection
 sspec.criteria = 'goodman';
 
 
 %% Code/Calculation execution section
-% Uses file 'ShaftDiaCal.m' as a function to obtain desired shaft
+% Uses file 'shaft_itt.m' as a function to obtain desired shaft
 % dimensions used for design
 
-% Initial guess of diameter for iteration
-Ini_d = 0.1;
+% Initial guess of diameter for iteration (inches or mm)
+Ini_d = 100;
 % Convergence criteria: in percent
-ccrit = 0.5;
+ccrit = 0.005;
 
 
 % Call of the function
-design_dia = shaft_itt(sspec, Ini_d, ccrit)
+[design_dia, ii, count] = shaft_itt(sspec, Ini_d, ccrit)
 
 
 %% Miscellaneous functions
@@ -100,11 +100,35 @@ function [mat_prop] = extract_prop(name, database)
 mat_prop = struct;
     for i=1:size(database, 1)
         if isequal(name, string(database(i,1)))
+            % Accounting for missing data entries: non-strings so from 2nd
+            % index start parsing
+            props = database(i,2:size(database, 2));
+            p_mask = cellfun(@ismissing, props, 'UniformOutput',false);
+            props(cell2mat(p_mask)) = {0};
+
             mat_prop.name = string(database(i,1));
-            mat_prop.Sut_SI = cell2mat(database(i,2));
-            mat_prop.Sut_Imperial = cell2mat(database(i,3));
-            mat_prop.Sy_SI = cell2mat(database(i,4));
-            mat_prop.Sy_Imperial = cell2mat(database(i,5));
+            mat_prop.Sut_SI = cell2mat(props(1));
+            mat_prop.Sut_Imperial = cell2mat(props(2));
+            mat_prop.Sy_SI = cell2mat(props(3));
+            mat_prop.Sy_Imperial = cell2mat(props(4));
+
+            % Notification if values aren't existing
+            m_loc = find([p_mask{:}] == 1);
+            if ~isequal(m_loc, [])
+                p_mess = {'Ultimate Strength (MPa)', ...
+                    'Ultimate Stregnth (ksi)', 'Yield Strength (MPa)',...
+                    'Yield Strength (ksi)'};
+                disp('Properties not available:')
+                for k=1:length(m_loc)
+                    disp('     - ' + string(p_mess(m_loc(k))))
+                end
+                disp(['WARNING: Trying to solve with the values above ' ...
+                    'under the corresponding unit system will not ' ...
+                    'give an answer'])
+                disp(['Ensure Unit_Choice matches the available' ...
+                    ' property values'])
+            end
+
         end
     end
 end 

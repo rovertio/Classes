@@ -37,6 +37,9 @@ if isequal(units, 'SI') % When using MPa and mm
         b = -0.995;
     end
 
+    % Final ka calculation
+    ka = a*(Sut^b);
+
     % kb value generation
     if end_D >= 2.79 && end_D <= 51
         kb = 1.24*(end_D)^(-0.107);
@@ -65,6 +68,9 @@ elseif isequal(units, 'Imperial') % When using ksi
         b = -0.995;
     end
 
+    % Final ka calculation
+    ka = a*(Sut^b);
+
     % kb value generation
     if end_D >= 0.11 && end_D <= 2
         kb = 0.879*(end_D)^(-0.107);
@@ -78,8 +84,6 @@ elseif isequal(units, 'Imperial') % When using ksi
 
 end 
 
-% Final ka calculation
-ka = a*(Sut^b);
 
 % Final kd calculation with temperature
 kd = 0.975 + 0.432*(10^(-3))*temp - 0.115*(10^(-5))*temp^2 ...
@@ -93,7 +97,7 @@ kc = 1;         % Because von mises is utilized, can set to value of 1
 % ke value generation
 rel_p = [50, 90, 95, 99, 99.9, 99.99, 99.999, 99.9999];
 ke_p = [1, 0.897, 0.868, 0.814, 0.753, 0.702, 0.659, 0.620];
-ke = interp1(rel_p, ke_p, rel);
+ke = interp1(rel_p, ke_p, rel*100);
 
 
 % Endurance strength calculation with resultant marin factors

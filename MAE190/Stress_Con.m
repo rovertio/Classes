@@ -21,7 +21,7 @@ else
         - 2.67*(10^-8)*Sut^3;
     q = 1/(1 + (roota_ax/sqrt(geo_r/2)));
     
-    % Calculation of qs: Notch sensitivity Axial/Bending
+    % Calculation of qs: Notch sensitivity Torsion
     roota_sh = 0.190 - 2.51*(10^-3)*Sut + 1.35*(10^-5)*Sut^2 ...
         - 2.67*(10^-8)*Sut^3;
     qs = 1/(1 + (roota_sh/sqrt(geo_r/2)));
@@ -46,12 +46,12 @@ if isequal(geo_type, 'fillet')
     % Calculation of Kt: Normal strength geometric factor
     A_mv = interp1(Dd_m, A_m, Dod);
     b_mv = interp1(Dd_m, b_m, Dod);
-    Kt = A_mv*(geo_r/end_D)^(b_mv);
+    Kt = A_mv*(geo_r/shaft_d)^(b_mv);
     
     % Calculation of Kts: Shear strength geometric factor
     A_tv = interp1(Dd_t, A_t, Dod);
     b_tv = interp1(Dd_t, b_t, Dod);
-    Kts = A_tv*(geo_r/end_D)^(b_tv);
+    Kts = A_tv*(geo_r/shaft_d)^(b_tv);
 
 end
 

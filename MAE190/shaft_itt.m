@@ -1,4 +1,4 @@
-function [dia, itt_array] = shaft_itt(shaft, init, ccrit)
+function [dia, itt_array, ii] = shaft_itt(shaft, init, ccrit)
 % Function which depends on Stress_Con, Marin, vs_stress, and criteria
 % functions to iterate and calculate a design diameter for a shaft using
 % the input material data
@@ -29,7 +29,7 @@ end
 
 
 % Initializing array for iterations
-itt_array = zeros(1,20);
+itt_array = zeros(1,2);
 itt_array(1) = init;        % First is the guess for shaft diameter
 ii = 1;
 conv_p = 1;
@@ -49,6 +49,6 @@ while conv_p > ccrit
      itt_array(ii+1) = dia;
     
     % Determining convergence
-    conv_p = (1 - abs(itt_array(ii+1)/itt_array(ii)))*100;
+    conv_p = abs((itt_array(ii+1) - itt_array(ii))/itt_array(ii));
     ii = ii + 1;
 end
