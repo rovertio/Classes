@@ -38,12 +38,14 @@ sspec.mat_prop = extract_prop(Mat_n,MatData);
 
 
 %% Shaft mechanical property specication
+% NOTE: Percents expressed in decimal form
+% NOTE: Temperature in Celsius/Farenheit from specified units
 % Used in obtaining the properties such as endurance strength that require
 % properties such as: finish, size factor, and others
 % Assumes round/circular cross-section
 sspec.surface_s = 'machined';
 sspec.reliability = 0.9999;
-sspec.temperature = 25;     % in Celsius/Farenheit from specified units
+sspec.temperature = 77;    
 
 % Geometry structure initialization
 sspec.geo = struct;
@@ -54,6 +56,8 @@ sspec.geo.r = 0.1;            % percentage of smaller shaft diameter
 
 
 %% Design load input section
+% Units: Mega Pascals (SI) & kilo pounds (Imperial)
+
 % Midrange and alternating stress input
 % sspec.Tm = 2;           % Mean torsion
 % sspec.Ta = 1;           % Amplitude torsion
@@ -63,10 +67,10 @@ sspec.geo.r = 0.1;            % percentage of smaller shaft diameter
 
 % If the midrange and alternating moment/torque not available:
 %   Calculate with minimum and maximum: function midamp
-Mmin = 1000;
-Mmax = 5000;
+Mmin = 1;
+Mmax = 5;
 Tmin = 0;
-Tmax = 1800;
+Tmax = 1.8;
 % Function for the stress values
 [sspec.Ma, sspec.Mm, sspec.Ta, sspec.Tm] = midamp(Mmax, Mmin, Tmax, Tmin);
 
@@ -76,7 +80,9 @@ Tmax = 1800;
 sspec.safety_n = 1.5;
 
 % Failure criteria selection
+%sspec.criteria = 'de-gerber';
 sspec.criteria = 'goodman';
+%sspec.criteria = 'de-asme elliptic';
 
 
 %% Code/Calculation execution section
@@ -84,16 +90,20 @@ sspec.criteria = 'goodman';
 % dimensions used for design
 
 % Initial guess of diameter for iteration (inches or mm)
-Ini_d = 1;
-% Convergence criteria: in percent
-ccrit = 0.005;
+Ini_d = 10;
+% Convergence criteria: in percent decimal form
+ccrit = 0.001;
 
 
 % Call of the function
-[design_dia, iterations, count] = shaft_itt(sspec, Ini_d, ccrit)
+[design_dia, iterations, count] = shaft_itt(sspec, Ini_d, ccrit);
 
 
-%% Miscellaneous functions
+
+
+
+
+%% Supplemental functions
 
 % Material property extraction from csv file
 function [mat_prop] = extract_prop(name, database)

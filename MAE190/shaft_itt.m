@@ -17,6 +17,8 @@ function [dia, itt_array, ii] = shaft_itt(shaft, init, ccrit)
 % Input2: initial guess for shaft diameter (smaller)
 % Outputs: 
 %   dia         Shaft diameter after interations
+%   itt_array   Values of diameter itterations
+%   ii          Number of itterations
 
 
 if isequal(shaft.Unit_Choice, 'SI')

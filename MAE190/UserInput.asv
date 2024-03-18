@@ -42,7 +42,7 @@ sspec.mat_prop = extract_prop(Mat_n,MatData);
 % properties such as: finish, size factor, and others
 % Assumes round/circular cross-section
 sspec.surface_s = 'machined';
-sspec.reliability = 99.99;
+sspec.reliability = 0.9999;
 sspec.temperature = 25;     % in Celsius/Farenheit from specified units
 
 % Geometry structure initialization
@@ -76,7 +76,8 @@ Tmax = 1800;
 sspec.safety_n = 1.5;
 
 % Failure criteria selection
-sspec.criteria = 'goodman';
+sspec.criteria = 'de-gerber';
+%sspec.criteria = 'goodman';
 
 
 %% Code/Calculation execution section
@@ -84,16 +85,19 @@ sspec.criteria = 'goodman';
 % dimensions used for design
 
 % Initial guess of diameter for iteration (inches or mm)
-Ini_d = 100;
+Ini_d = 1;
 % Convergence criteria: in percent
 ccrit = 0.005;
 
 
 % Call of the function
-[design_dia, ii, count] = shaft_itt(sspec, Ini_d, ccrit)
+[design_dia, iterations, count] = shaft_itt(sspec, Ini_d, ccrit)
 
 
-%% Miscellaneous functions
+
+
+
+%% Supplemental functions
 
 % Material property extraction from csv file
 function [mat_prop] = extract_prop(name, database)
