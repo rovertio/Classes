@@ -37,7 +37,7 @@ Mat_n = 'Prob1';
 sspec.mat_prop = extract_prop(Mat_n,MatData);
 
 
-%% Shaft mechanical property specication
+%% Shaft mechanical property specicationthe dia
 % NOTE: Percents expressed in decimal form
 % NOTE: Temperature in Celsius/Farenheit from specified units
 % Used in obtaining the properties such as endurance strength that require
@@ -90,17 +90,16 @@ sspec.criteria = 'goodman';
 % dimensions used for design
 
 % Initial guess of diameter for iteration (inches or mm)
-Ini_d = 10;
+Ini_d = 100;
 % Convergence criteria: in percent decimal form
 ccrit = 0.001;
 
 
-% Call of the function
+% Call of the function: More information about the calculations can be
+% found within the iterations and count variables for convergence
 [design_dia, iterations, count] = shaft_itt(sspec, Ini_d, ccrit);
-
-
-
-
+iterations
+design_dia
 
 
 %% Supplemental functions
@@ -135,7 +134,7 @@ mat_prop = struct;
                 disp(['WARNING: Trying to solve with the values above ' ...
                     'under the corresponding unit system will not ' ...
                     'give an answer'])
-                disp(['Ensure Unit_Choice matches the available' ...
+                disp(['-----> Ensure Unit_Choice matches the available' ...
                     ' property values'])
             end
 

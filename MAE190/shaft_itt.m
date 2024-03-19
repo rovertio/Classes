@@ -54,3 +54,15 @@ while conv_p > ccrit
     conv_p = abs((itt_array(ii+1) - itt_array(ii))/itt_array(ii));
     ii = ii + 1;
 end
+
+% Check for yielding
+[vsi_a, vsi_m, ny] = vs_stress(itt_array(end), shaft.Ma, shaft.Mm, ...
+    shaft.Ta, shaft.Tm, Kf, Kfs, Sy);
+if ny < 1
+    disp('Shaft undergoes yielding: ny = ' + string(ny))
+else
+    disp('Shaft is safe from yielding: ny = ' + string(ny))
+end
+
+
+

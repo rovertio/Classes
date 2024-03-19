@@ -45,6 +45,8 @@ if isequal(units, 'SI') % When using MPa and mm
         kb = 1.24*(end_D)^(-0.107);
     elseif end_D > 51 && end_D <= 254
         kb = 1.51*(end_D)^(-0.157);
+    elseif end_D < 2.79
+        kb = 1;
     else
         kb = 1.51*(end_D)^(-0.157);
     end
@@ -76,6 +78,8 @@ elseif isequal(units, 'Imperial') % When using ksi
         kb = 0.879*(end_D)^(-0.107);
     elseif end_D > 2 && end_D <= 10
         kb = 0.91*(end_D)^(-0.157);
+    elseif end_D < 0.11
+        kb = 1;
     else
         kb = 0.91*(end_D)^(-0.157);
     end
