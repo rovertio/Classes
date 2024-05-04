@@ -189,14 +189,12 @@ if clamp1_distance >= jaw_width/2
     weight1 = 'bold';
 else 
     clamp1label = 'green';
-    weight1 = 'normal';
 end
 if clamp2_distance >= jaw_width/2
     clamp2label = 'red';
-    weight2 = 'bold';
+    weight2 = 'bold'
 else 
     clamp2label = 'green';
-    weight2 = 'normal';
 end
 
 
@@ -216,7 +214,6 @@ text(mean(clamp1_x2), end_y - ceil(0.1*size(Gray2,1)), ...
 text(mean(clamp2_x2), end_y - ceil(0.1*size(Gray2,1)), ...
     "Largest jaw distance: " + clamp2_distance, "Color", clamp2label,...
     "FontSize", 14, "FontWeight", weight2);
-title("Processed clamp photo with annotations", "FontSize", 17)
 
 hold off
 truesize(3, [300,200]);
