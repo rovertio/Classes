@@ -5,7 +5,7 @@
 %   - Orient the specimen to have the handles be more 
 %       directly under the flash light of the camera. 
 %   - (Test setup) Have the clamps near the bottom left corner
-        
+clearvars;
 
 %% Creation of connection with IOS phone
 clearvars; % Needs to clear previous camera
@@ -28,22 +28,45 @@ img_test = snapshot(cam,'immediate');
 %daspect([1,1,1])
 %image(img_test)
 
-% Image processing
+%% Image processing
 
-Gray = rgb2gray(img_test);
-Gray=imcrop(Gray,[500,200,170,100]);
+%Landscape (Bottom middle)
+%Crop_im=imcrop(img_test,[730,300,200,100]);
+
+%Portrait
+Crop_im=imcrop(img_test,[300,750,200,100]);
+
+Gray = rgb2gray(Crop_im);
+
+%Gray = rgb2gray(img_test);
+%Gray=imcrop(Gray,[730,300,200,100]);
 %BW = imbinarize(Fil, 'adaptive', 'ForegroundPolarity','bright','Sensitivity',0.8);
 
-%Fil=wiener2(Gray,[2,2],10);
+%Experimental
+%Gray=wiener2(Gray,[4,4],20);
 
 
 % Feature Detection
 
-edge_d="canny";
-min_th=0.05;
-max_th=0.32;
-Gray2=edge(Gray,edge_d,[min_th,max_th]);
+edge_d='Canny';
+%Landscape
+% min_th=0.05;
+% max_th=0.32;
+
+%Portrait
+min_th=0.01;
+max_th=0.231;
+
+thre=[min_th max_th];
+Gray2=edge_cl(Gray,edge_d,thre);
 %BW2=edge(BW,edge_d,[min_th,max_th]);
+
+% Rotate image if tips are oriented down
+[t_centers, t_radii, t_metric] = imfindcircles(Gray2,[6 16]);
+if ceil(mean(t_centers(:,2))) > size(Gray2,1)*0.5
+    Gray2 = imrotate(Gray2,180);
+    Crop_im = imrotate(Crop_im,180);
+end
 
 
 
@@ -61,15 +84,15 @@ viscircles(g_centers, g_radii,'Color','b');
 %imshow(BW2)
 %viscircles(centers, radii,'Color','b');
 hold off
-truesize(1, [800,800]);
+truesize(1, [300,300]);
 
 %% Plotting lines for the clamp jaws
 % Makes a line of the edge of the clamp jaws by finding the end points in
 % contact with the edge and of that not passing the circle center y value
 
 % End point values for the circle centers
-start_y = ceil(0.7*size(Gray2,1));
-end_y = ceil(min(g_centers(1:end,2)));
+start_y = ceil(0.75*size(Gray2,1));
+end_y = ceil(min(g_centers(1:end,2))) + ceil(0.05*size(Gray2,1));
 
 % Initiate vector with line's corresponding start and ends points
 jaw_x1 = zeros(size(Gray2,2));
@@ -120,11 +143,11 @@ clamp1_x1 = zeros(1,4);
 clamp2_x1 = zeros(1,4);
 clamp1_x2 = zeros(1,4);
 clamp2_x2 = zeros(1,4);
-edge = 0;
+edge_cl = 0;
 
 % Compare proximity wrt points recorded at jaw tip
 for ii = 1:length(jaw_x2)
-    if jaw_x2(end) - jaw_x2(ii) >= 0.35*size(Gray2,2) && edge < 3
+    if jaw_x2(end) - jaw_x2(ii) >= 0.35*size(Gray2,2) && edge_cl < 3
         clamp1_x2(ii) = jaw_x2(ii);
         clamp1_x1(ii) = jaw_x1(ii);
     else 
@@ -161,6 +184,7 @@ for gg = 1:(length(clamp2_x1) - 1)
     theta2(gg) = acos(dot(v_ref, v_check)/(norm(v_ref)*norm(v_check)));
 end 
 
+
 theta1 = theta1(theta1~=0)';
 theta2 = theta2(theta2~=0)';
 
@@ -179,7 +203,7 @@ end
 
 % Finding the distances between the jaws
 % Values in mm
-jaw_length = 7;
+jaw_length = 13;
 jaw_width = 1.75;
 clamp1_distance = 2*theta1*jaw_length;
 clamp2_distance = 2*theta2*jaw_length;
@@ -201,7 +225,7 @@ end
 
 
 figure(3);
-imshow(Gray2)
+imshow(Crop_im)
 hold on
 for kk = 1:length(jaw_x1)
     plot([jaw_x1(kk),jaw_x2(kk)], [start_y,end_y], 'LineWidth', 8,...

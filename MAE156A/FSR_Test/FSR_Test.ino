@@ -11,16 +11,16 @@ void setup(void) {
 void loop(void) {
   fsrReading = analogRead(fsrPin);
   // print analog input
-  Serial.print("Analog reading = ");
-  Serial.println(fsrReading);
+  //Serial.print("Analog reading = ");
+  //Serial.println(fsrReading);
   // map analog input to voltage [mV]
   fsrVoltage = map(fsrReading, 0, 1023, 0, 5000);
   // print voltage
-  Serial.print("Voltage reading in mV = ");
-  Serial.println(fsrVoltage);
+  //Serial.print("Voltage reading in mV = ");
+  //Serial.println(fsrVoltage);
   // if no input from FSR, print &quot;no pressure&quot;
   if (fsrVoltage == 0) {
-    Serial.println("No pressure & ");
+    //Serial.println("No pressure & ");
     // from circuit diagram, calculations for analog input voltage (V0):
     // V0 = Vcc * R1 / (R1 + FSR) where R1 = 10K and Vcc = 5V
     // therefore FSR = ((Vcc - V0) * R1) / V0
@@ -29,16 +29,16 @@ void loop(void) {
     fsrResistance *= 10000;             // *R1
     fsrResistance /= fsrVoltage;        // / V0
     // print resistance
-    Serial.print("FSR resistance in ohms = ");
-    Serial.println(fsrResistance);
+    //Serial.print("FSR resistance in ohms = ");
+    //Serial.println(fsrResistance);
 
 
     // conductance in microMhos
     fsrConductance = 1000000;
     fsrConductance /= fsrResistance;
     // print conductance
-    Serial.print("Conductance in microMhos: ");
-    Serial.println(fsrConductance);
+    //Serial.print("Conductance in microMhos: ");
+    //Serial.println(fsrConductance);
 
     // Force
     float fsr_force;
@@ -48,5 +48,5 @@ void loop(void) {
     Serial.println(fsr_force);
   }
   Serial.println("-- -- -- -- -- -- -- -- -- --");
-  delay(1000);
+  delay(200);
 }
